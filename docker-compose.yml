@@ -1,0 +1,16 @@
+version: "3.7"
+
+services:
+  go-grpc:
+    container_name: go-grpc
+    build: .
+    ports:
+      - 5300:5300
+      - 8081:8081
+    command: /go/bin/server
+    networks:
+      - go-grpc
+
+networks:
+  go-grpc:
+    name: go-grpc

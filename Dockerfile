@@ -1,6 +1,6 @@
 FROM golang
 
-ADD . /go/src/github.com/eschizoid/go-grpc/server
+COPY . /go/src/github.com/eschizoid/go-grpc
 
 RUN go install github.com/eschizoid/go-grpc/server
 

@@ -1,0 +1,21 @@
+syntax = "proto3";
+package proto;
+
+import "google/api/annotations.proto";
+
+service Ingest {
+    rpc Do (Request) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/ingest"
+            body: "*"
+        };
+    }
+}
+
+message Request {
+    string message = 1;
+}
+
+message Response {
+    string message = 1;
+}
