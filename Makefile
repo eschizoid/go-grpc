@@ -4,13 +4,13 @@ GOBUILD := $(GOCMD) build
 GOCLEAN := $(GOCMD) clean
 GOTEST := $(GOCMD) test
 GOGET := $(GOCMD) get
-PROTO_OUT := "proto/ingest.pb.go"
-PROTO_GW_OUT := "proto/ingestgw.pb.gw.go"
-PROTO_SG_OUT := "proto/ingestgw.swagger.json"
-SERVER_OUT := "bin/server"
-CLIENT_OUT := "bin/client"
-SERVER_PKG_BUILD := "github.com/eschizoid/go-grpc/server"
-CLIENT_PKG_BUILD := "github.com/eschizoid/go-grpc/client"
+PROTO_OUT := proto/ingest.pb.go
+PROTO_GW_OUT := proto/ingestgw.pb.gw.go
+PROTO_SG_OUT := proto/ingestgw.swagger.json
+SERVER_OUT := bin/server
+CLIENT_OUT := bin/client
+SERVER_PKG_BUILD := github.com/eschizoid/go-grpc/server
+CLIENT_PKG_BUILD := github.com/eschizoid/go-grpc/client
 
 .PHONY: all build
 
@@ -47,8 +47,7 @@ clean:
 	@rm ${GOPATH}/$(SERVER_OUT) ${GOPATH}/$(CLIENT_OUT) $(PROTO_OUT) $(PROTO_GW_OUT) $(PROTO_SG_OUT)
 
 run:
-	$(GOBUILD) -o $(BINARY_NAME) -v ./...
-	./$(BINARY_NAME)
+	@docker-compose up --build -d
 
 dep:
 	$(GOCMD) get -v -d ./...
