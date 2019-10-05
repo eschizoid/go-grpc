@@ -9,8 +9,9 @@ PROTO_GW_OUT := proto/ingestgw.pb.gw.go
 PROTO_SG_OUT := proto/ingestgw.swagger.json
 SERVER_OUT := bin/server
 CLIENT_OUT := bin/client
-SERVER_PKG_BUILD := github.com/eschizoid/go-grpc/server
 CLIENT_PKG_BUILD := github.com/eschizoid/go-grpc/client
+HANDLER_PKG_BUILD := github.com/eschizoid/go-grpc/handler
+SERVER_PKG_BUILD := github.com/eschizoid/go-grpc/server
 
 .PHONY: all build
 
@@ -19,6 +20,7 @@ all: build-grpc build-grpc-gw build-grpc-sw build
 build:
 	$(GOBUILD) -i -v -o ${GOPATH}/$(CLIENT_OUT) $(CLIENT_PKG_BUILD)
 	$(GOBUILD) -i -v -o ${GOPATH}/$(SERVER_OUT) $(SERVER_PKG_BUILD)
+	$(GOBUILD) -i -v $(HANDLER_PKG_BUILD)
 
 build-grpc:
 	$(PROTOCMD) ingest.proto \

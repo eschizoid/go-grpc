@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/eschizoid/go-grpc/handler"
 	pb "github.com/eschizoid/go-grpc/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"golang.org/x/net/context"
@@ -31,15 +32,14 @@ func startRESTServer(address, grpcAddress string) error {
 	var opts = []grpc.DialOption{
 		grpc.WithInsecure(),
 	}
-	err := pb.RegisterIngestHandlerFromEndpoint(ctx, mux, grpcAddress, opts)
-	if err != nil {
+	if err := pb.RegisterIngestHandlerFromEndpoint(ctx, mux, grpcAddress, opts); err != nil {
 		return fmt.Errorf("could not register service Ingest: %s", err)
 	}
 	r := http.NewServeMux()
 	r.HandleFunc("/swagger/", serveSwagger)
 	r.Handle("/", mux)
 	log.Printf("starting HTTP/1.1 REST server on %s", address)
-	if err = http.ListenAndServe(address, r); err != nil {
+	if err := http.ListenAndServe(address, r); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
 	return nil
@@ -52,33 +52,23 @@ func startGRPCServer() error {
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	pb.RegisterIngestServer(grpcServer, &server{})
+	pb.RegisterIngestServer(grpcServer, &handler.IngestServer{})
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
 	return nil
 }
 
-type server struct{}
-
-func (s *server) Do(c context.Context, request *pb.Request) (response *pb.Response, err error) {
-	log.Printf("Payload: %s", request.GetMessage())
-	response = &pb.Response{Message: "pong",}
-	return response, nil
-}
-
 func main() {
 	grpcAddress := fmt.Sprintf("%s:%d", "go-grpc", 5300)
 	restAddress := fmt.Sprintf("%s:%d", "go-grpc", 8081)
 	go func() {
-		err := startGRPCServer()
-		if err != nil {
+		if err := startGRPCServer(); err != nil {
 			log.Fatalf("failed to start gRPC server: %s", err)
 		}
 	}()
 	go func() {
-		err := startRESTServer(restAddress, grpcAddress)
-		if err != nil {
+		if err := startRESTServer(restAddress, grpcAddress); err != nil {
 			log.Fatalf("failed to start gRPC server: %s", err)
 		}
 	}()
